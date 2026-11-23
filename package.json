@@ -1,0 +1,13 @@
+{
+  "name": "mock-weaver",
+  "version": "1.0.0",
+  "description": "泛微 OA 模拟器：HR 同步接口 + OAuth2 SSO + 人员/组织管理页（CSV 导入/手动编辑）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}

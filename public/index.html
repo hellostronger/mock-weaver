@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>泛微 OA Mock — 管理页</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <h1>泛微 OA Mock</h1>
+  <div class="stats" id="stats">加载中…</div>
+  <button id="resetBtn" class="danger">恢复示例数据</button>
+</header>
+
+<nav>
+  <button data-tab="users" class="tab active">人员</button>
+  <button data-tab="departments" class="tab">部门</button>
+  <button data-tab="subcompanies" class="tab">分部</button>
+  <button data-tab="help" class="tab">说明 / CSV 格式</button>
+</nav>
+
+<!-- ============ 人员 ============ -->
+<section id="tab-users" class="panel">
+  <div class="toolbar">
+    <h2>人员</h2>
+    <button id="userAdd">+ 新增人员</button>
+  </div>
+  <div class="csvbar">
+    <input type="file" id="userCsv" accept=".csv,text/csv">
+    <select id="userCsvMode"><option value="replace">替换全部</option><option value="append">追加/更新</option></select>
+    <button id="userCsvImport">导入 CSV</button>
+    <button id="userCsvExport">导出 CSV</button>
+    <a href="#" id="userTemplate">下载模板</a>
+    <span class="hint">列: workcode,lastname,status,accounttype,departmentid,subcompanyid1,mobile,email,telephone</span>
+  </div>
+  <table id="userTable"><thead>
+    <tr><th>工号</th><th>姓名</th><th>状态</th><th>账号类型</th><th>部门ID</th><th>分部ID</th><th>手机</th><th>邮箱</th><th>电话</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+  <p class="hint">状态: 0正式 1试用 2实习 3兼职 4离职 5待离职…（4/5 不参与同步与 SSO）；账号类型: 0主账号 1次账号（默认不同步）</p>
+</section>
+
+<!-- ============ 部门 ============ -->
+<section id="tab-departments" class="panel" hidden>
+  <div class="toolbar">
+    <h2>部门</h2>
+    <button id="deptAdd">+ 新增部门</button>
+  </div>
+  <div class="csvbar">
+    <input type="file" id="deptCsv" accept=".csv,text/csv">
+    <select id="deptCsvMode"><option value="replace">替换全部</option><option value="append">追加/更新</option></select>
+    <button id="deptCsvImport">导入 CSV</button>
+    <button id="deptCsvExport">导出 CSV</button>
+    <a href="#" id="deptTemplate">下载模板</a>
+    <span class="hint">列: id,departmentname,supdepid,subcompanyid1,canceled（supdepid=0 表示顶层，挂在分部下）</span>
+  </div>
+  <table id="deptTable"><thead>
+    <tr><th>ID</th><th>部门名称</th><th>上级部门ID</th><th>分部ID</th><th>注销</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<!-- ============ 分部 ============ -->
+<section id="tab-subcompanies" class="panel" hidden>
+  <div class="toolbar">
+    <h2>分部</h2>
+    <button id="subAdd">+ 新增分部</button>
+  </div>
+  <div class="csvbar">
+    <input type="file" id="subCsv" accept=".csv,text/csv">
+    <select id="subCsvMode"><option value="replace">替换全部</option><option value="append">追加/更新</option></select>
+    <button id="subCsvImport">导入 CSV</button>
+    <button id="subCsvExport">导出 CSV</button>
+    <a href="#" id="subTemplate">下载模板</a>
+    <span class="hint">列: id,subcompanyname,supsubcomid,canceled（supsubcomid=0 表示顶层分部）</span>
+  </div>
+  <table id="subTable"><thead>
+    <tr><th>ID</th><th>分部名称</th><th>上级分部ID</th><th>注销</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+  <p class="hint">canceled=1 的组织不参与同步（excludeCanceledOrgs 默认开启）</p>
+</section>
+
+<!-- ============ 说明 ============ -->
+<section id="tab-help" class="panel" hidden>
+  <h2>对接配置</h2>
+  <h3>同步（sso 服务 weaver provider）</h3>
+  <pre>WEAVER_BASE_URL=http://&lt;本机&gt;:9100
+WEAVER_HR_AUTH_MODE=ip        # 或 token（POST /api/ec/dev/auth/applytoken）
+WEAVER_ACTIVE_STATUSES=0,1,2,3</pre>
+  <h3>泛微 SSO（sso 服务 oauth2 provider）</h3>
+  <pre>OAUTH2_AUTHORIZE_URL=http://&lt;本机&gt;:9100/sso/oauth2.0/authorize
+OAUTH2_TOKEN_URL=http://&lt;本机&gt;:9100/sso/oauth2.0/accessToken
+OAUTH2_USER_INFO_URL=http://&lt;本机&gt;:9100/sso/oauth2.0/profile
+OAUTH2_CLIENT_ID=mock
+OAUTH2_CLIENT_SECRET=mock
+OAUTH2_USERNAME_MAP=attributes.workcode
+OAUTH2_MEMBER_NAME_MAP=attributes.lastname
+OAUTH2_CONTACT_MAP=attributes.mobile
+OAUTH2_SOURCE_ID=weaver</pre>
+  <h3>接口清单</h3>
+  <table class="plain">
+    <tr><th>用途</th><th>接口</th></tr>
+    <tr><td>HR token</td><td>POST /api/ec/dev/auth/applytoken（headers: appid / secret）</td></tr>
+    <tr><td>分部分页</td><td>POST /api/hrm/resful/getHrmsubcompanyWithPage（body: {params:{pagesize,curpage}}）</td></tr>
+    <tr><td>部门分页</td><td>POST /api/hrm/resful/getHrmdepartmentWithPage</td></tr>
+    <tr><td>人员分页</td><td>POST /api/hrm/resful/getHrmUserInfoWithPage（支持 departmentid 逗号多值 / subcompanyid1 单值 / workcode 过滤）</td></tr>
+    <tr><td>OAuth2 登录页</td><td>GET /sso/oauth2.0/authorize?client_id&amp;redirect_uri&amp;response_type=code&amp;state</td></tr>
+    <tr><td>OAuth2 token</td><td>POST /sso/oauth2.0/accessToken（form: grant_type/client_id/code/redirect_uri/client_secret）</td></tr>
+    <tr><td>OAuth2 用户信息</td><td>GET /sso/oauth2.0/profile（Authorization: Bearer …）</td></tr>
+  </table>
+  <h3>环境变量</h3>
+  <pre>PORT=9100                       # 监听端口
+DATA_FILE=./data/orgs.json      # 数据文件
+MOCK_EXPECT_APP_ID=             # applytoken 校验 appid（空=不校验）
+MOCK_EXPECT_SECRET=             # applytoken 校验 secret（空=不校验）
+MOCK_STRICT_TOKEN=0             # 1=HR 业务接口强制携带有效 token
+MOCK_SSO_ACTIVE_STATUSES=0,1,2,3 # SSO 登录页展示的状态范围
+MOCK_AUTHORIZE_PATH=/sso/oauth2.0/authorize
+MOCK_TOKEN_PATH=/sso/oauth2.0/accessToken
+MOCK_PROFILE_PATH=/sso/oauth2.0/profile</pre>
+</section>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿workcode,lastname,status,accounttype,departmentid,subcompanyid1,mobile,email,telephone
+77000136,张三,0,0,11,1,13800000136,zhangsan@example.com,
+81000139,李四,0,0,12,1,13800000139,lisi@example.com,
+77000140,王五,1,0,"111,12",1,13800000140,,
+77000141,赵六,0,0,13,1,,zhaoliu@example.com,021-8888
+77000142,钱七,4,0,11,1,13800000142,,

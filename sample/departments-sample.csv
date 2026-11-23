@@ -1,0 +1,5 @@
+﻿id,departmentname,supdepid,subcompanyid1,canceled
+11,研发部,0,1,0
+12,产品部,0,1,0
+13,人事部,0,1,0
+111,平台组,11,1,0
